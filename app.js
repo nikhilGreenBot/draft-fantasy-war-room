@@ -274,6 +274,9 @@ const RENDER = {
     }
 
     $("tonightRoot").innerHTML = `
+      <img class="crew-banner" src="photos/group-banner.jpg" alt="Draft Day crew in costume" width="1200" height="900" loading="eager"/>
+      <p class="crew-caption">Last year’s crew · that’s us on the right (Hulk &amp; Black Widow)</p>
+
       <div class="hero-bar">
         <div class="hero-chip"><strong>Katie &amp; Nikhil</strong> · pick 2 · 45s clock</div>
         <p class="one-liner">Read top to bottom. For each pick: take #1 if available, else #2, else #3…</p>
@@ -474,6 +477,28 @@ const RENDER = {
     `;
   },
 
+  draftday() {
+    $("draftdayRoot").innerHTML = `
+      <p class="dday-intro">Costume night from Draft Day 2025 — Hulk (Nikhil), Black Widow (Katie), and Magneto. The soft blur behind the whole site is you two.</p>
+      <div class="dday-grid">
+        <figure class="dday-card">
+          <img src="photos/solo-hulk.jpg" alt="Nikhil as Gladiator Hulk on a balcony" loading="lazy"/>
+          <figcaption>
+            <h3>Hulk smash</h3>
+            <p>Nikhil · gladiator Hulk. Pure draft-day energy.</p>
+          </figcaption>
+        </figure>
+        <figure class="dday-card">
+          <img src="photos/trio-draft.jpg" alt="Magneto, Hulk, and Black Widow selfie" loading="lazy"/>
+          <figcaption>
+            <h3>The trio</h3>
+            <p>Magneto · Hulk · Black Widow. War room selfie.</p>
+          </figcaption>
+        </figure>
+      </div>
+    `;
+  },
+
   faq() {
     $("faqRoot").innerHTML = `
       <div class="faq-list">
@@ -481,7 +506,7 @@ const RENDER = {
           <h3>Quick start</h3>
           <ol>
             <li>Open this page + Yahoo + Meet</li>
-            <li>Read <strong>Tonight</strong> once</li>
+            <li>Read <strong>Plan</strong> once</li>
             <li>During the draft, use <strong>Board</strong> — tap a name to copy it into Yahoo</li>
             <li>Tap picks onto <strong>Roster</strong> as you go</li>
           </ol>
@@ -489,12 +514,13 @@ const RENDER = {
         <article class="faq-item">
           <h3>Tabs</h3>
           <ul>
-            <li><strong>Tonight</strong> — who to take</li>
+            <li><strong>Plan</strong> — who to take each round</li>
             <li><strong>Board</strong> — search &amp; copy names</li>
             <li><strong>Roster</strong> — your lineup on this phone</li>
             <li><strong>Form</strong> — NFL games / PPG</li>
             <li><strong>League</strong> — scoring cheat sheet</li>
-            <li><strong>Duties</strong> — Katie vs Nikhil</li>
+            <li><strong>Roles</strong> — Katie vs Nikhil</li>
+            <li><strong>Draft Day 2025</strong> — costume pics</li>
           </ul>
         </article>
         <article class="faq-item">

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css?v=4"/>
+  <link rel="stylesheet" href="style.css?v=5"/>
 </head>
 <body>
 <div class="app">
@@ -42,7 +42,8 @@
         <button class="nav-tab" data-tab="roster"><span class="nl">Roster</span></button>
         <button class="nav-tab" data-tab="form"><span class="nl">Form</span></button>
         <button class="nav-tab" data-tab="league"><span class="nl">League</span></button>
-        <button class="nav-tab" data-tab="duties"><span class="nl">Duties</span></button>
+        <button class="nav-tab" data-tab="duties"><span class="nl">Roles</span></button>
+        <button class="nav-tab" data-tab="draftday"><span class="nl">Draft Day 2025</span></button>
         <button class="nav-tab" data-tab="faq"><span class="nl">FAQ</span></button>
         <div class="nav-indicator" id="navIndicator"></div>
       </div>
@@ -102,6 +103,14 @@
       <div id="dutiesRoot"></div>
     </section>
 
+    <section class="section" id="s-draftday">
+      <div class="section-header">
+        <h2 class="section-title">Draft Day 2025</h2>
+        <span class="section-sub">Hulk · Black Widow · Magneto</span>
+      </div>
+      <div id="draftdayRoot"></div>
+    </section>
+
     <section class="section" id="s-faq">
       <div class="section-header">
         <h2 class="section-title">FAQ</h2>
@@ -121,8 +130,8 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="data.js?v=4"></script>
-<script src="api.js?v=4"></script>
-<script src="app.js?v=4"></script>
+<script src="data.js?v=5"></script>
+<script src="api.js?v=5"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>
