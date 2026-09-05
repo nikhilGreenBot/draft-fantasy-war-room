@@ -274,8 +274,8 @@ const RENDER = {
     }
 
     $("tonightRoot").innerHTML = `
-      <img class="crew-banner" src="photos/group-banner.jpg" alt="Draft Day crew in costume" width="1200" height="900" loading="eager"/>
-      <p class="crew-caption">Last year’s crew · that’s us on the right (Hulk &amp; Black Widow)</p>
+      <img class="crew-banner" src="photos/group-banner.jpg" alt="Katie as Black Widow and Nikhil as Hulk" width="1600" height="1200" loading="eager"/>
+      <p class="crew-caption">Katie &amp; Nikhil · Black Widow &amp; Hulk · Draft Day 2025</p>
 
       <div class="hero-bar">
         <div class="hero-chip"><strong>Katie &amp; Nikhil</strong> · pick 2 · 45s clock</div>

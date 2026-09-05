@@ -286,14 +286,18 @@ body::after {
 }
 
 .crew-banner {
-  display: block; width: 100%; max-height: 168px; object-fit: cover; object-position: center 35%;
-  border-radius: 16px; border: 1px solid var(--line);
-  background: rgba(255,255,255,.92);
-  margin-bottom: 16px;
-  box-shadow: 0 12px 32px rgba(0,0,0,.28);
+  display: block; width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: min(420px, 52vw);
+  object-fit: cover;
+  object-position: center 42%;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  margin-bottom: 10px;
+  box-shadow: 0 14px 36px rgba(0,0,0,.35);
 }
 .crew-caption {
-  font-size: 0.8rem; color: var(--dim); margin: -10px 0 16px; text-align: center;
+  font-size: 0.8rem; color: var(--dim); margin: 0 0 18px; text-align: center;
 }
 
 .dday-grid {
@@ -373,7 +377,7 @@ body::after {
   .finish-grid { grid-template-columns: repeat(2, 1fr); }
   .plan-player { grid-template-columns: 72px 26px 1fr auto; }
   .dday-grid { grid-template-columns: 1fr; }
-  .crew-banner { max-height: 140px; }
+  .crew-banner { max-height: min(320px, 70vw); }
   body::before { filter: blur(18px) saturate(1.1) brightness(0.5); opacity: 0.45; }
 }
 .faq-item {
