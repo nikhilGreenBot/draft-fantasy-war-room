@@ -478,23 +478,70 @@ const RENDER = {
   },
 
   draftday() {
+    const shots = [
+      {
+        src: "photos/full-crew.jpg",
+        cls: "wide",
+        alt: "Full Draft Day 2025 costume crew",
+        title: "The league",
+        blurb: "Whole crew · Fantasy Draft night in full costume.",
+      },
+      {
+        src: "photos/solo-widow.jpg",
+        cls: "",
+        alt: "Katie as Black Widow in a hero crouch",
+        title: "Black Widow",
+        blurb: "Katie · ready for the clock.",
+      },
+      {
+        src: "photos/solo-hulk.jpg",
+        cls: "",
+        alt: "Nikhil as Gladiator Hulk on a balcony",
+        title: "Hulk smash",
+        blurb: "Nikhil · gladiator Hulk.",
+      },
+      {
+        src: "photos/snack-run.jpg",
+        cls: "land",
+        alt: "Katie and Nikhil with catering trays",
+        title: "Snack duty",
+        blurb: "Black Widow + Hulk delivering the spread.",
+      },
+      {
+        src: "photos/hulk-catering.jpg",
+        cls: "",
+        alt: "Nikhil as Hulk carrying two food trays",
+        title: "Hulk catering",
+        blurb: "Someone had to bring the food.",
+      },
+      {
+        src: "photos/katie-friend.jpg",
+        cls: "land",
+        alt: "Katie and a friend selfie at Draft Day",
+        title: "Widow & friend",
+        blurb: "Katie mid–Draft Day hang.",
+      },
+      {
+        src: "photos/trio-draft.jpg",
+        cls: "land",
+        alt: "Magneto, Hulk, and Black Widow selfie",
+        title: "The trio",
+        blurb: "Magneto · Hulk · Black Widow.",
+      },
+    ];
+
     $("draftdayRoot").innerHTML = `
-      <p class="dday-intro">Costume night from Draft Day 2025 — Hulk (Nikhil), Black Widow (Katie), and Magneto. The soft blur behind the whole site is you two.</p>
+      <p class="dday-intro">Draft Day 2025 — Hulk (Nikhil), Black Widow (Katie), and the crew. The soft blur behind the site is still you two.</p>
       <div class="dday-grid">
-        <figure class="dday-card">
-          <img src="photos/solo-hulk.jpg" alt="Nikhil as Gladiator Hulk on a balcony" loading="lazy"/>
-          <figcaption>
-            <h3>Hulk smash</h3>
-            <p>Nikhil · gladiator Hulk. Pure draft-day energy.</p>
-          </figcaption>
-        </figure>
-        <figure class="dday-card">
-          <img src="photos/trio-draft.jpg" alt="Magneto, Hulk, and Black Widow selfie" loading="lazy"/>
-          <figcaption>
-            <h3>The trio</h3>
-            <p>Magneto · Hulk · Black Widow. War room selfie.</p>
-          </figcaption>
-        </figure>
+        ${shots.map((s) => `
+          <figure class="dday-card ${s.cls}">
+            <img src="${s.src}" alt="${s.alt}" loading="lazy"/>
+            <figcaption>
+              <h3>${s.title}</h3>
+              <p>${s.blurb}</p>
+            </figcaption>
+          </figure>
+        `).join("")}
       </div>
     `;
   },

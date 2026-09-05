@@ -305,11 +305,22 @@ body::after {
 }
 .dday-card {
   background: var(--glass); border: 1px solid var(--line); border-radius: 16px;
-  overflow: hidden;
+  overflow: hidden; margin: 0;
 }
+.dday-card.wide { grid-column: 1 / -1; }
 .dday-card img {
   display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover;
-  object-position: center 30%;
+  object-position: center 28%;
+  background: #0a1228;
+}
+.dday-card.wide img {
+  aspect-ratio: 16 / 10;
+  object-position: center 40%;
+  max-height: 420px;
+}
+.dday-card.land img {
+  aspect-ratio: 4 / 3;
+  object-position: center 35%;
 }
 .dday-card figcaption {
   padding: 12px 14px 14px;
