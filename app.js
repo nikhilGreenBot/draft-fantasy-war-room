@@ -168,7 +168,7 @@ function miniPlayer(p) {
 }
 
 function bindRows(root, { copy = true, roster = false } = {}) {
-  root.querySelectorAll(".prow, .mini, .lock-card").forEach((btn) => {
+  root.querySelectorAll(".prow, .mini, .lock-card, .plan-player").forEach((btn) => {
     btn.addEventListener("click", () => {
       const p = PLAYERS.find((x) => x.search === btn.dataset.search);
       if (!p) return;
