@@ -4,6 +4,15 @@ const PICKS = WR.picks;
 const ROSTER_KEY = "domination-roster-2026";
 const SLOTS = ["QB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "IDP", "IDP", "K", "DEF"];
 
+const ESPN_ABBR = {
+  ARI: "ari", ATL: "atl", BAL: "bal", BUF: "buf", CAR: "car", CHI: "chi",
+  CIN: "cin", CLE: "cle", DAL: "dal", DEN: "den", DET: "det", GB: "gb",
+  HOU: "hou", IND: "ind", JAX: "jax", KC: "kc", LAC: "lac", LAR: "lar",
+  LV: "lv", MIA: "mia", MIN: "min", NE: "ne", NO: "no", NYG: "nyg",
+  NYJ: "nyj", PHI: "phi", PIT: "pit", SEA: "sea", SF: "sf", TB: "tb",
+  TEN: "ten", WAS: "wsh", WSH: "wsh",
+};
+
 const $ = (id) => document.getElementById(id);
 const toastEl = $("toast");
 
@@ -11,7 +20,18 @@ function toast(msg) {
   toastEl.hidden = false;
   toastEl.textContent = msg;
   clearTimeout(toastEl._t);
-  toastEl._t = setTimeout(() => { toastEl.hidden = true; }, 1600);
+  toastEl._t = setTimeout(() => { toastEl.hidden = true; }, 1400);
+}
+
+function teamLogo(team, size = 40) {
+  if (!team) return "";
+  const ab = ESPN_ABBR[team] || String(team).toLowerCase();
+  return `https://a.espncdn.com/i/teamlogos/nfl/500/${ab}.png`;
+}
+
+function logoImg(team, cls = "tlogo") {
+  if (!team) return `<span class="${cls} empty"></span>`;
+  return `<img class="${cls}" src="${teamLogo(team)}" alt="${team}" loading="lazy" onerror="this.classList.add('broken')"/>`;
 }
 
 function headshot(p) {
@@ -47,6 +67,22 @@ function removeFromRoster(search) {
   renderRoster();
 }
 
+function shortNote(p) {
+  if (!p.note) return "";
+  // Keep first sentence only for board cards
+  const s = p.note.split(/(?<=[.!?])\s+/)[0];
+  return s.length > 72 ? s.slice(0, 69) + "…" : s;
+}
+
+function tierLabel(t) {
+  if (t === "lock") return "LOCK";
+  if (t === "fade") return "FADE";
+  if (t === "qb1") return "QB";
+  if (t === "idp1") return "IDP";
+  if (t === "te1") return "TE";
+  return "";
+}
+
 /* ── countdown ── */
 function tickClock() {
   const target = new Date(LEAGUE.draftAt).getTime();
@@ -54,8 +90,8 @@ function tickClock() {
   const el = $("draftClock");
   const sub = $("tonightSub");
   if (now >= target) {
-    el.textContent = "DRAFT LIVE · 45s clock";
-    if (sub) sub.textContent = "On the clock after 1.01 · queue first, talk second";
+    el.textContent = "Draft live · 45s";
+    if (sub) sub.textContent = "On the clock after 1.01";
     return;
   }
   let s = Math.floor((target - now) / 1000);
@@ -98,29 +134,41 @@ window.addEventListener("resize", () => {
 });
 
 function playerCard(p, extra = "") {
-  const img = p.sid
-    ? `<img class="head" src="${headshot(p)}" alt="" onerror="this.style.opacity='0'"/>`
+  const hs = p.sid
+    ? `<img class="head" src="${headshot(p)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'head'}))"/>`
     : `<div class="head"></div>`;
   const ppg = p.custom && p.custom.ppg != null ? p.custom.ppg.toFixed(1) : "—";
-  const badge = p.tier === "lock" ? "lock" : p.tier === "fade" ? "fade" : p.tier === "qb1" ? "qb1" : p.tier === "idp1" ? "idp1" : "";
+  const badge = tierLabel(p.tier);
+  const note = shortNote(p);
   return `<button class="prow" data-search="${p.search.replace(/"/g, "&quot;")}">
     <div class="rk">${p.rank < 200 ? p.rank : "—"}</div>
-    ${img}
-    <div>
-      <div class="p-name">${p.name}${badge ? `<span class="badge ${badge}">${p.tier}</span>` : ""}</div>
-      <div class="p-sub">${p.pos} · ${p.team || ""} · bye ${p.bye || "—"} · Yahoo: ${p.search}</div>
-      ${p.note ? `<div class="p-sub">${p.note}</div>` : ""}
+    <div class="media">
+      ${hs}
+      ${logoImg(p.team, "tlogo sm")}
+    </div>
+    <div class="p-main">
+      <div class="p-name">${p.name}${badge ? `<span class="badge ${p.tier}">${badge}</span>` : ""}</div>
+      <div class="p-sub"><span class="pos-pill">${p.pos}</span> ${p.team || ""} · Bye ${p.bye || "—"}</div>
+      ${note ? `<div class="p-note">${note}</div>` : ""}
     </div>
     <div class="p-right">
       <div class="ppg">${ppg}</div>
-      <div class="ppg-lbl">’25 custom</div>
+      <div class="ppg-lbl">PPG</div>
       ${extra}
     </div>
   </button>`;
 }
 
+function miniPlayer(p) {
+  return `<button class="mini" data-search="${p.search.replace(/"/g, "&quot;")}">
+    ${logoImg(p.team, "tlogo sm")}
+    <span class="mini-name">${p.name}</span>
+    <span class="mini-meta">${p.pos} · ${p.custom?.ppg?.toFixed(1) ?? "—"}</span>
+  </button>`;
+}
+
 function bindRows(root, { copy = true, roster = false } = {}) {
-  root.querySelectorAll(".prow").forEach((btn) => {
+  root.querySelectorAll(".prow, .mini, .lock-card").forEach((btn) => {
     btn.addEventListener("click", () => {
       const p = PLAYERS.find((x) => x.search === btn.dataset.search);
       if (!p) return;
@@ -130,58 +178,72 @@ function bindRows(root, { copy = true, roster = false } = {}) {
   });
 }
 
-/* ── renderers ── */
 const RENDER = {
   tonight() {
     const locks = PLAYERS.filter((p) => p.tier === "lock").sort(byRank);
     const qbs = PLAYERS.filter((p) => p.tier === "qb1").sort(byRank);
-    const rbs = PLAYERS.filter((p) => ["Achane", "Henry", "Hampton", "Chase Brown", "Taylor", "Cook", "Barkley"].some((n) => p.name.includes(n.split(" ").pop()) || p.name.includes(n)));
-    const hunt = PLAYERS.filter((p) => p.rank >= 11 && p.rank <= 24 && p.pos !== "IDP");
+    const targets = PLAYERS.filter((p) =>
+      ["Justin Jefferson", "A.J. Brown", "Drake London", "Nico Collins", "George Pickens",
+        "De'Von Achane", "Derrick Henry", "Omarion Hampton", "Chase Brown", "Jonathan Taylor",
+        "James Cook", "Saquon Barkley", "Brock Bowers", "Trey McBride", "Josh Allen", "Lamar Jackson"]
+        .includes(p.name) || p.search === "James Cook III"
+    ).sort(byRank);
 
     $("tonightRoot").innerHTML = `
-      <div class="callout"><strong>Hey Katie &amp; Nikhil.</strong> This is your shared war room for Domination League. No fandom reaches — Bills names only move if they are the best player on the clock. Cook at pick 2 is a reach. Allen at 23 is a scoring pick.</div>
-      <div class="stat-row">
-        <div class="stat"><b>1.02</b><span>Our slot</span></div>
-        <div class="stat"><b>45s</b><span>Pick clock</span></div>
-        <div class="stat"><b>12</b><span>Teams</span></div>
-        <div class="stat"><b>17</b><span>Rounds</span></div>
+      <div class="hero-bar">
+        <div class="hero-chip"><strong>Katie &amp; Nikhil</strong> · Domination League</div>
+        <div class="stat-row tight">
+          <div class="stat"><b>1.02</b><span>Slot</span></div>
+          <div class="stat"><b>45s</b><span>Clock</span></div>
+          <div class="stat"><b>12</b><span>Teams</span></div>
+        </div>
       </div>
-      <h3 class="lock-name" style="font-size:1.25rem;margin-bottom:10px">On the clock — 10 seconds</h3>
-      <div class="grid-3">
-        ${locks.map((p, i) => `
-          <article class="card ${i === 0 ? "accent" : i === 1 ? "navy" : ""}">
-            <div class="lock-num">LOCK ${i + 1}</div>
-            <div class="lock-name">${p.name}</div>
-            <div class="lock-meta">${p.pos} · ${p.team} · bye ${p.bye} · ’25 ${p.custom?.ppg ?? "—"} ppg in our scoring</div>
-            <p class="lock-note">${p.note}</p>
-          </article>`).join("")}
-      </div>
-      <div class="callout navy" style="margin-top:18px">If 1.01 takes Gibbs → we take <strong>Ja'Marr Chase</strong>. If 1.01 takes Chase → we take <strong>Gibbs</strong>. CMC / Cook / Allen are not pick-2 names.</div>
 
-      <h3 class="lock-name" style="font-size:22px;margin:22px 0 10px">Picks 23 + 26 — the package</h3>
+      <div class="block-label">Pick 2 — take in this order</div>
+      <div class="lock-grid">
+        ${locks.map((p, i) => `
+          <button class="lock-card ${i === 0 ? "accent" : ""}" data-search="${p.search.replace(/"/g, "&quot;")}">
+            <div class="lock-top">
+              ${logoImg(p.team, "tlogo")}
+              <span class="lock-num">#${i + 1}</span>
+            </div>
+            <div class="lock-name">${p.name}</div>
+            <div class="lock-meta">${p.pos} · ${p.team} · Bye ${p.bye}</div>
+            <div class="lock-ppg">${p.custom?.ppg?.toFixed(1) ?? "—"} <span>PPG</span></div>
+          </button>`).join("")}
+      </div>
+
+      <div class="ifthen">
+        <div class="ifthen-row"><span class="tag">If</span> 1.01 takes Gibbs <span class="arrow">→</span> <strong>Chase</strong></div>
+        <div class="ifthen-row"><span class="tag">If</span> 1.01 takes Chase <span class="arrow">→</span> <strong>Gibbs</strong></div>
+        <div class="ifthen-row mute">Skip at #2: CMC · Cook · Allen</div>
+      </div>
+
+      <div class="block-label">Picks 23 + 26</div>
       <div class="grid-2">
         <article class="card navy">
-          <div class="lock-num">WANT ONE ELITE QB</div>
-          ${qbs.slice(0, 6).map((p) => `<div class="lock-meta" style="margin-top:8px"><strong>${p.name}</strong> · ${p.team} · ${p.custom?.ppg ?? "—"} ppg</div>`).join("")}
+          <div class="lock-num">1. Elite QB</div>
+          <div class="mini-list">${qbs.slice(0, 6).map(miniPlayer).join("")}</div>
         </article>
         <article class="card">
-          <div class="lock-num">THEN RB OR WR1</div>
-          <p class="lock-note">Took Chase at 2? You must leave 23/26 with a starting RB. Took Gibbs/Bijan? QB + WR is the cleanest championship shape.</p>
-          <p class="lock-note">Hunt: Jefferson, A.J. Brown, London, Nico, Pickens, Achane, Henry, Hampton, Chase Brown, Bowers only if the skill board is dead.</p>
+          <div class="lock-num">2. Then RB or WR</div>
+          <p class="one-liner">Chase at 2 → need an RB here. Gibbs/Bijan at 2 → QB + WR is fine.</p>
+          <div class="mini-list">${targets.filter((p) => p.pos !== "QB").slice(0, 8).map(miniPlayer).join("")}</div>
         </article>
       </div>
 
-      <h3 class="lock-name" style="font-size:22px;margin:22px 0 10px">Our snake picks</h3>
+      <div class="block-label">Our picks</div>
       <div class="picks">${PICKS.map((n, i) => `<span class="pick-pill ours">R${i + 1} · ${n}</span>`).join("")}</div>
 
-      <h3 class="lock-name" style="font-size:22px;margin:22px 0 10px">Hard rules</h3>
-      <div class="rules">
-        <div class="rule"><i>1</i> Never K or DEF before round 14. Aubrey in 12–13 is the only exception.</div>
-        <div class="rule"><i>2</i> Elite QB by pick 26. This scoring makes Allen/Lamar weekly cheat codes.</div>
-        <div class="rule"><i>3</i> Two green-dot linebackers for IDP. Rounds 6–11. Not pass rushers.</div>
-        <div class="rule"><i>4</i> At 15 seconds left, click queue #1. No debate.</div>
+      <div class="block-label">Rules</div>
+      <div class="rules compact">
+        <div class="rule"><i>1</i> No K / DEF before round 14</div>
+        <div class="rule"><i>2</i> Elite QB by pick 26</div>
+        <div class="rule"><i>3</i> Two tackle LBs for IDP (rounds 6–11)</div>
+        <div class="rule"><i>4</i> At 15s left → click queue #1</div>
       </div>
     `;
+    bindRows($("tonightRoot"), { copy: true, roster: true });
   },
 
   board() {
@@ -192,7 +254,7 @@ const RENDER = {
       const q = ($("boardSearch").value || "").toLowerCase();
       const list = PLAYERS.filter((p) => {
         const okPos = pos === "ALL" || p.pos === pos;
-        const blob = `${p.name} ${p.search} ${p.team} ${p.pos} ${p.note || ""}`.toLowerCase();
+        const blob = `${p.name} ${p.search} ${p.team} ${p.pos}`.toLowerCase();
         return okPos && (!q || blob.includes(q));
       }).sort(byRank);
       $("boardRoot").innerHTML = `<div class="plist">${list.map((p) => playerCard(p)).join("")}</div>`;
@@ -209,117 +271,114 @@ const RENDER = {
     draw();
   },
 
-  roster() {
-    renderRoster();
-  },
+  roster() { renderRoster(); },
 
   async form() {
     const root = $("formRoot");
-    root.innerHTML = `<p class="lock-meta">Loading NFL scoreboard + Sleeper box scores…</p>
-      <div class="callout navy">Yahoo league points need a Yahoo login (OAuth). This page cannot see your Yahoo matchup from GitHub Pages. Instead we score official NFL box scores with <strong>your</strong> sheet: 7-pt pass TDs, 0.5/completion, first downs, IDP tackles. Close enough to rank form. Open Yahoo for the official total.</div>`;
+    root.innerHTML = `<p class="one-liner muted">Loading games…</p>`;
 
-    const top = PLAYERS.filter((p) => p.custom && p.custom.ppg).sort((a, b) => b.custom.ppg - a.custom.ppg).slice(0, 12);
+    const top = PLAYERS.filter((p) => p.custom && p.custom.ppg)
+      .sort((a, b) => b.custom.ppg - a.custom.ppg).slice(0, 10);
 
     let gamesHtml = "";
     try {
       const sb = await API.scoreboard();
-      const events = sb.events || [];
+      const events = (sb.events || []).slice(0, 12);
       if (!events.length) {
-        gamesHtml = `<div class="callout">No live NFL games on the ESPN board right now. Season kicks off ${LEAGUE.seasonStart}. 2025 custom PPG is below so you can still compare players tonight.</div>`;
+        gamesHtml = `<p class="one-liner muted">No live games yet. Season starts ${LEAGUE.seasonStart}.</p>`;
       } else {
-        gamesHtml = `<div class="plist">${events.map((ev) => {
+        gamesHtml = `<div class="games-grid">${events.map((ev) => {
           const comp = ev.competitions?.[0];
           const home = comp?.competitors?.find((c) => c.homeAway === "home");
           const away = comp?.competitors?.find((c) => c.homeAway === "away");
-          const st = comp?.status?.type?.shortDetail || ev.status?.type?.shortDetail || "";
+          const st = comp?.status?.type?.shortDetail || "";
+          const aAb = away?.team?.abbreviation;
+          const hAb = home?.team?.abbreviation;
           return `<div class="game">
-            <div class="t">${away?.team?.abbreviation || ""}</div>
-            <div>
-              <div class="sc">${away?.score || "–"}  ${home?.score || "–"}</div>
+            <div class="g-side">${logoImg(aAb, "tlogo sm")}<span>${aAb || ""}</span></div>
+            <div class="g-mid">
+              <div class="sc">${away?.score || "–"} · ${home?.score || "–"}</div>
               <div class="st">${st}</div>
             </div>
-            <div class="t" style="text-align:right">${home?.team?.abbreviation || ""}</div>
+            <div class="g-side right">${logoImg(hAb, "tlogo sm")}<span>${hAb || ""}</span></div>
           </div>`;
         }).join("")}</div>`;
       }
     } catch {
-      gamesHtml = `<div class="callout">ESPN scoreboard blocked or offline. Using cached 2025 form.</div>`;
+      gamesHtml = `<p class="one-liner muted">Scoreboard unavailable.</p>`;
     }
 
-    let liveNote = "";
+    let weekHtml = "";
     try {
       const state = await API.state();
-      liveNote = `<p class="lock-meta" style="margin:12px 0">Sleeper NFL state · season ${state.season} · week ${state.display_week} · ${state.season_type}</p>`;
       if (state.season_has_scores && state.display_week) {
         const week = await API.weekStats(state.season, state.display_week);
         const rows = PLAYERS.map((p) => {
           if (!p.sid || !week[p.sid]) return null;
-          const pts = API.customPoints(week[p.sid], p.nflPos);
-          return { p, pts };
-        }).filter(Boolean).sort((a, b) => b.pts - a.pts);
+          return { p, pts: API.customPoints(week[p.sid], p.nflPos) };
+        }).filter(Boolean).sort((a, b) => b.pts - a.pts).slice(0, 12);
         if (rows.length) {
-          liveNote += `<h3 class="lock-name" style="font-size:22px;margin:18px 0 10px">This week in our scoring</h3>
-            <div class="plist">${rows.slice(0, 20).map(({ p, pts }) => playerCard(p, `<div class="ppg-lbl">wk ${pts}</div>`)).join("")}</div>`;
+          weekHtml = `
+            <div class="block-label">Week ${state.display_week} · our scoring</div>
+            <div class="plist">${rows.map(({ p, pts }) => playerCard(p, `<div class="ppg-lbl">wk ${pts}</div>`)).join("")}</div>`;
         }
       }
-    } catch {
-      liveNote += `<div class="callout">Sleeper week stats not up yet. Showing 2025 custom form.</div>`;
-    }
+    } catch { /* ignore */ }
 
-    root.innerHTML += `
+    root.innerHTML = `
+      <p class="one-liner">NFL box scores in our scoring. Official totals stay in Yahoo.</p>
+      <div class="block-label">Scoreboard</div>
       ${gamesHtml}
-      ${liveNote}
-      <h3 class="lock-name" style="font-size:22px;margin:22px 0 8px">2025 custom PPG (this league)</h3>
-      <p class="lock-meta" style="margin-bottom:12px">Includes first downs. Per-game 100-yard / 300-yard bonuses are applied on weekly lines only, so season PPG is a floor.</p>
+      ${weekHtml}
+      <div class="block-label">2025 PPG (our league)</div>
       <div class="plist">${top.map((p) => playerCard(p)).join("")}</div>
-      <p class="lock-meta" style="margin-top:16px"><a href="${LEAGUE.yahooUrl}" target="_blank" rel="noopener" style="color:#C0C4C8">Open Yahoo league #${LEAGUE.id} →</a></p>
+      <p class="one-liner muted" style="margin-top:14px"><a href="${LEAGUE.yahooUrl}" target="_blank" rel="noopener">Open Yahoo #${LEAGUE.id} →</a></p>
     `;
     bindRows(root, { copy: true, roster: true });
   },
 
   league() {
     $("leagueRoot").innerHTML = `
-      <div class="callout accent">Public cheat sheets assume 4-pt passing TDs and no first downs. Ours does not. That is why Allen is a round-2 pick here and a green-dot LB scores like a WR2.</div>
-      <div class="grid-2">
+      <p class="one-liner">Not Yahoo default. Draft for these numbers.</p>
+      <div class="score-grid">
         <article class="card navy">
-          <div class="lock-num">QUARTERBACK</div>
-          <table class="table">
-            <tr><th>Stat</th><th>Pts</th></tr>
-            <tr><td>Completion</td><td class="num">0.5</td></tr>
-            <tr><td>Pass yards</td><td class="num">1 / 20</td></tr>
-            <tr><td>Pass TD</td><td class="num">7</td></tr>
-            <tr><td>INT</td><td class="num">-1</td></tr>
-            <tr><td>Pass 1st down</td><td class="num">1</td></tr>
-            <tr><td>200 / 250 / 300 yd</td><td class="num">+4 / +3 / +4</td></tr>
-          </table>
+          <div class="score-head">${logoImg("BUF", "tlogo sm")}<span>QB</span></div>
+          <ul class="score-list">
+            <li><span>Completion</span><b>0.5</b></li>
+            <li><span>Pass yards</span><b>1/20</b></li>
+            <li><span>Pass TD</span><b>7</b></li>
+            <li><span>Pass 1st down</span><b>1</b></li>
+            <li><span>200/250/300</span><b>+4/+3/+4</b></li>
+          </ul>
         </article>
         <article class="card">
-          <div class="lock-num">RUSH / REC</div>
-          <table class="table">
-            <tr><th>Stat</th><th>Pts</th></tr>
-            <tr><td>Rush attempt</td><td class="num">0.5</td></tr>
-            <tr><td>Rush / rec yards</td><td class="num">1 / 10</td></tr>
-            <tr><td>Rush TD / rec TD</td><td class="num">7 / 6</td></tr>
-            <tr><td>Reception (PPR)</td><td class="num">1</td></tr>
-            <tr><td>Rec 1st / rush 1st</td><td class="num">1 / 0.5</td></tr>
-            <tr><td>100 rush / 115 rec</td><td class="num">bonus stack</td></tr>
-          </table>
+          <div class="score-head">${logoImg("DET", "tlogo sm")}<span>RB / WR</span></div>
+          <ul class="score-list">
+            <li><span>Reception</span><b>1</b></li>
+            <li><span>Rush attempt</span><b>0.5</b></li>
+            <li><span>Yards</span><b>1/10</b></li>
+            <li><span>Rush / Rec TD</span><b>7 / 6</b></li>
+            <li><span>Rec 1st down</span><b>1</b></li>
+          </ul>
         </article>
         <article class="card accent">
-          <div class="lock-num">IDP · START TWO LBs</div>
-          <table class="table">
-            <tr><th>Stat</th><th>Pts</th></tr>
-            <tr><td>Solo tackle</td><td class="num">3.0</td></tr>
-            <tr><td>Assist</td><td class="num">1.75</td></tr>
-            <tr><td>Sack / INT</td><td class="num">7 / 7</td></tr>
-            <tr><td>TFL / PD</td><td class="num">4 / 4.5</td></tr>
-          </table>
+          <div class="score-head">${logoImg("MIA", "tlogo sm")}<span>IDP</span></div>
+          <ul class="score-list">
+            <li><span>Solo tackle</span><b>3.0</b></li>
+            <li><span>Assist</span><b>1.75</b></li>
+            <li><span>Sack / INT</span><b>7</b></li>
+            <li><span>TFL</span><b>4</b></li>
+            <li><span>Start</span><b>2 LBs</b></li>
+          </ul>
         </article>
         <article class="card">
-          <div class="lock-num">ROSTER</div>
-          <p class="lock-note">1 QB · 1 RB · 2 WR · 1 TE · 2 FLEX · 2 IDP · K · DEF · 6 bench · 5 IR</p>
-          <p class="lock-note">You can start four skill players. Only one RB is required. Load WRs. Still lock a workhorse because rush attempts pay.</p>
-          <p class="lock-note">Playoffs: 6 teams, weeks 15–17. Avoid stacking Dallas + Arizona (week 14 bye) in the starting lineup.</p>
+          <div class="score-head"><span class="pos-pill">ROSTER</span></div>
+          <ul class="score-list plain">
+            <li>QB · RB · WR · WR · TE</li>
+            <li>FLEX · FLEX · IDP · IDP</li>
+            <li>K · DEF · 6 bench · 5 IR</li>
+            <li>Playoffs: weeks 15–17</li>
+          </ul>
         </article>
       </div>
     `;
@@ -327,92 +386,60 @@ const RENDER = {
 
   duties() {
     $("dutiesRoot").innerHTML = `
-      <div class="callout navy">Nikhil and Katie manage one Yahoo account together. Pick a role before 8:25 PM, stick to it, and keep Google Meet open.</div>
       <div class="duty">
         <article class="card accent">
-          <h3>Katie — Yahoo operator</h3>
-          <p class="lock-meta">You own the click. Do not leave the Yahoo draft tab.</p>
+          <div class="role-tag">Katie</div>
+          <h3>Yahoo</h3>
           <ul>
-            <li>Owns search + queue. Keep 8–12 names loaded.</li>
-            <li>Pre-load Gibbs, Chase, Bijan before 8:30.</li>
-            <li>At 15 seconds left, click queue #1. No debate.</li>
-            <li>After our pick, re-queue the next targets immediately.</li>
+            <li>Stay on the draft tab</li>
+            <li>Keep queue full (8–12)</li>
+            <li>At 15s → click #1</li>
           </ul>
         </article>
         <article class="card navy">
-          <h3>Nikhil — war room</h3>
-          <p class="lock-meta">This site + Meet audio + the lock call.</p>
+          <div class="role-tag">Nikhil</div>
+          <h3>War room</h3>
           <ul>
-            <li>Watches the pick stream and bye weeks.</li>
-            <li>Calls a 3-name lock list before we are on the clock.</li>
-            <li>Tracks QB / RB / WR / IDP so we do not leave round 7 empty.</li>
-            <li>If silent at 15 seconds, Katie clicks queue #1.</li>
+            <li>Call the next 3 names</li>
+            <li>Watch byes &amp; holes</li>
+            <li>Run Meet audio</li>
           </ul>
         </article>
       </div>
-      <div class="callout" style="margin-top:16px"><strong>Conflict protocol:</strong> one name, ten seconds, then click. Marriage first. The pick does not get tabled.</div>
-      <p class="lock-meta" style="margin-top:14px">Roles can swap if you prefer — just agree who clicks Yahoo and who watches this page.</p>
+      <p class="one-liner center" style="margin-top:16px">Disagree? One name · 10 seconds · click.</p>
     `;
   },
 
   faq() {
     $("faqRoot").innerHTML = `
-      <div class="callout">New here? Start with <strong>Tonight</strong>, then open <strong>Board</strong> when you are drafting. Everything else is optional depth.</div>
       <div class="faq-list">
         <article class="faq-item">
-          <h3>What is this site?</h3>
-          <p>A private draft war room for <strong>Nikhil and Katie</strong> in Domination League (Yahoo #30476). It has the pick-2 plan, a searchable player board with Yahoo-ready names, a roster tracker, scoring rules, and live NFL form. Anyone with the link can use it — it is designed so Katie (or a friend) can open it and know what to do in under a minute.</p>
-        </article>
-        <article class="faq-item">
-          <h3>How do we use it on draft night?</h3>
+          <h3>Quick start</h3>
           <ol>
-            <li>Open this page on one laptop (or phone).</li>
-            <li>Open Yahoo Fantasy on the other device — same shared account.</li>
-            <li>Join Google Meet so you can talk over the 45-second clock.</li>
-            <li>Read <strong>Tonight</strong> once before 8:30 so the lock list is in both heads.</li>
-            <li>When drafting, use <strong>Board</strong>: tap a player to copy the exact Yahoo search name, paste into Yahoo, and queue them.</li>
-            <li>Tap players onto <strong>Roster</strong> as you pick them so you can see empty slots at a glance.</li>
+            <li>Open this page + Yahoo + Meet</li>
+            <li>Read <strong>Tonight</strong> once</li>
+            <li>During the draft, use <strong>Board</strong> — tap a name to copy it into Yahoo</li>
+            <li>Tap picks onto <strong>Roster</strong> as you go</li>
           </ol>
         </article>
         <article class="faq-item">
-          <h3>What should Katie do?</h3>
-          <p>Katie is set up as the <strong>Yahoo operator</strong> (see Duties): she stays on the draft screen, keeps the queue full, and clicks the pick. She can also keep this FAQ or Board open on a second screen if she wants. If she prefers the war-room role instead, swap with Nikhil — just make sure one person clicks Yahoo and one person watches the board.</p>
-        </article>
-        <article class="faq-item">
-          <h3>What should Nikhil do?</h3>
-          <p>Nikhil runs the war room: watches who got drafted, calls the next 1–2–3 lock names, watches bye weeks and position holes, and keeps Meet clear so Katie is not talking over the clock.</p>
-        </article>
-        <article class="faq-item">
-          <h3>What does each tab mean?</h3>
+          <h3>Tabs</h3>
           <ul>
-            <li><strong>Tonight</strong> — pick-2 decision tree, rounds 2–3 plan, snake pick numbers, hard rules.</li>
-            <li><strong>Board</strong> — ranked players. Filter by position. Search. Tap to copy the Yahoo name and add to Roster.</li>
-            <li><strong>Roster</strong> — your starter slots on this device (saved in the browser). Tap × to remove.</li>
-            <li><strong>Form</strong> — NFL games and player production scored with <em>our</em> league settings (not Yahoo login).</li>
-            <li><strong>League</strong> — the weird scoring that makes QBs and IDP linebackers so valuable here.</li>
-            <li><strong>Duties</strong> — who does what between Katie and Nikhil.</li>
-            <li><strong>FAQ</strong> — this page.</li>
+            <li><strong>Tonight</strong> — who to take</li>
+            <li><strong>Board</strong> — search &amp; copy names</li>
+            <li><strong>Roster</strong> — your lineup on this phone</li>
+            <li><strong>Form</strong> — NFL games / PPG</li>
+            <li><strong>League</strong> — scoring cheat sheet</li>
+            <li><strong>Duties</strong> — Katie vs Nikhil</li>
           </ul>
         </article>
         <article class="faq-item">
-          <h3>Why can’t I see our Yahoo points here?</h3>
-          <p>Yahoo Fantasy needs a login (OAuth) and a small server. This site is free static hosting on GitHub Pages, so it cannot read your private league matchup. Form uses public NFL box scores and applies Domination League scoring so you can still compare players. For the official weekly score, open Yahoo.</p>
+          <h3>Yahoo points?</h3>
+          <p>Not on this site (needs Yahoo login). Form uses NFL stats with our scoring. Official scores stay in Yahoo.</p>
         </article>
         <article class="faq-item">
-          <h3>Does my roster sync between Katie’s phone and Nikhil’s?</h3>
-          <p>No. Roster is saved in each browser’s local storage. Both of you should tap the same names after each pick (or one person owns Roster). The Board and Tonight tabs are the same for everyone — those do not need syncing.</p>
-        </article>
-        <article class="faq-item">
-          <h3>What if we disagree on a pick?</h3>
-          <p>Say one name. Ten seconds. Click. Do not burn the 45-second clock on a debate. Revisit strategy between picks.</p>
-        </article>
-        <article class="faq-item">
-          <h3>Can we use this after the draft?</h3>
-          <p>Yes. Through the season, use <strong>Form</strong> for weekly NFL context and <strong>League</strong> as a reminder of why your roster was built the way it was. Yahoo remains the source of truth for standings and lineup locks.</p>
-        </article>
-        <article class="faq-item">
-          <h3>Who built this?</h3>
-          <p>Nikhil built it for Domination League draft night with Katie as co-GM — same style as his other GitHub Pages projects. Portfolio: <a href="https://nikhilbastikar.dev" target="_blank" rel="noopener" style="color:#C0C4C8">nikhilbastikar.dev</a>.</p>
+          <h3>Roster sync?</h3>
+          <p>Each phone saves its own list. Tap the same names on both devices after each pick.</p>
         </article>
       </div>
     `;
@@ -434,31 +461,43 @@ function renderRoster() {
   const extras = list.filter((p) => !used.has(p.search));
 
   $("rosterRoot").innerHTML = `
-    <div class="callout navy">Tap anyone on the Board tab to copy their Yahoo name <em>and</em> add them here. Katie and Nikhil each keep a list on their own phone — tap the same names after every pick so both screens stay in sync.</div>
+    <p class="one-liner">Tap players on Board to fill this. Saved on this device only.</p>
     <div class="slot-grid">
       ${rows.map(({ slot, p }) => p ? `
         <div class="slot filled">
           <div class="slot-pos">${slot}</div>
-          <div><div class="p-name">${p.name}</div><div class="p-sub">${p.pos} · ${p.team || ""}</div></div>
-          <button class="xbtn" data-x="${p.search}">×</button>
+          <div class="slot-player">
+            ${logoImg(p.team, "tlogo sm")}
+            <div>
+              <div class="p-name">${p.name}</div>
+              <div class="p-sub">${p.pos} · ${p.team || ""}</div>
+            </div>
+          </div>
+          <button class="xbtn" data-x="${p.search}" aria-label="Remove">×</button>
         </div>` : `
         <div class="slot">
           <div class="slot-pos">${slot}</div>
-          <div class="ghost">Empty — grab from Board</div>
+          <div class="ghost">Empty</div>
           <span></span>
         </div>`).join("")}
     </div>
-    ${extras.length ? `<h3 class="lock-name" style="font-size:22px;margin:18px 0 8px">Bench</h3>
+    ${extras.length ? `
+      <div class="block-label">Bench</div>
       <div class="slot-grid">${extras.map((p) => `
         <div class="slot filled">
           <div class="slot-pos">BN</div>
-          <div><div class="p-name">${p.name}</div><div class="p-sub">${p.pos} · ${p.team || ""}</div></div>
+          <div class="slot-player">
+            ${logoImg(p.team, "tlogo sm")}
+            <div>
+              <div class="p-name">${p.name}</div>
+              <div class="p-sub">${p.pos} · ${p.team || ""}</div>
+            </div>
+          </div>
           <button class="xbtn" data-x="${p.search}">×</button>
         </div>`).join("")}</div>` : ""}
-    <p class="lock-meta" style="margin-top:14px">${list.length} players saved on this device.</p>
   `;
   $("rosterRoot").querySelectorAll(".xbtn").forEach((b) => {
-    b.addEventListener("click", () => removeFromRoster(b.dataset.x));
+    b.addEventListener("click", (e) => { e.stopPropagation(); removeFromRoster(b.dataset.x); });
   });
 }
 
