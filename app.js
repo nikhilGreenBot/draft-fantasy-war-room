@@ -274,11 +274,16 @@ const RENDER = {
     }
 
     $("tonightRoot").innerHTML = `
-      <img class="crew-banner" src="photos/group-banner.jpg" alt="Katie as Black Widow and Nikhil as Hulk" width="1600" height="1200" loading="eager"/>
-      <p class="crew-caption">Katie &amp; Nikhil · Black Widow &amp; Hulk · Draft Day 2025</p>
+      <div class="crew-banner-wrap">
+        <img class="crew-banner" src="photos/group-banner.jpg" alt="Katie and Nikhil in costume" width="224" height="224" loading="eager"/>
+        <div class="crew-banner-meta">
+          <strong>Katie &amp; Nikhil</strong>
+          <p class="crew-caption">Black Widow &amp; Hulk · pick 2 · 45s clock</p>
+          <button type="button" class="crew-jump" data-goto="draftday">See Draft Day 2025 photos →</button>
+        </div>
+      </div>
 
       <div class="hero-bar">
-        <div class="hero-chip"><strong>Katie &amp; Nikhil</strong> · pick 2 · 45s clock</div>
         <p class="one-liner">Read top to bottom. For each pick: take #1 if available, else #2, else #3…</p>
       </div>
 
@@ -311,6 +316,7 @@ const RENDER = {
       </div>
     `;
     bindRows($("tonightRoot"), { copy: true, roster: true });
+    $("tonightRoot").querySelector(".crew-jump")?.addEventListener("click", () => goTo("draftday"));
   },
 
   board() {
@@ -479,6 +485,13 @@ const RENDER = {
 
   draftday() {
     const shots = [
+      {
+        src: "photos/group-banner.jpg",
+        cls: "land",
+        alt: "Katie as Black Widow and Nikhil as Hulk selfie",
+        title: "Co-GMs",
+        blurb: "Katie & Nikhil · the blur behind the whole site.",
+      },
       {
         src: "photos/full-crew.jpg",
         cls: "wide",
