@@ -139,14 +139,14 @@ const RENDER = {
     const hunt = PLAYERS.filter((p) => p.rank >= 11 && p.rank <= 24 && p.pos !== "IDP");
 
     $("tonightRoot").innerHTML = `
-      <div class="callout"><strong>No fandom.</strong> Bills names only move if they are the best player on the clock. Cook at 2 is a reach. Allen at 23 is a scoring pick.</div>
+      <div class="callout"><strong>Hey Katie &amp; Nikhil.</strong> This is your shared war room for Domination League. No fandom reaches — Bills names only move if they are the best player on the clock. Cook at pick 2 is a reach. Allen at 23 is a scoring pick.</div>
       <div class="stat-row">
         <div class="stat"><b>1.02</b><span>Our slot</span></div>
         <div class="stat"><b>45s</b><span>Pick clock</span></div>
         <div class="stat"><b>12</b><span>Teams</span></div>
         <div class="stat"><b>17</b><span>Rounds</span></div>
       </div>
-      <h3 class="lock-name" style="font-size:22px;margin-bottom:10px">On the clock — 10 seconds</h3>
+      <h3 class="lock-name" style="font-size:1.25rem;margin-bottom:10px">On the clock — 10 seconds</h3>
       <div class="grid-3">
         ${locks.map((p, i) => `
           <article class="card ${i === 0 ? "accent" : i === 1 ? "navy" : ""}">
@@ -327,29 +327,94 @@ const RENDER = {
 
   duties() {
     $("dutiesRoot").innerHTML = `
+      <div class="callout navy">Nikhil and Katie manage one Yahoo account together. Pick a role before 8:25 PM, stick to it, and keep Google Meet open.</div>
       <div class="duty">
         <article class="card accent">
-          <h3>Yahoo operator</h3>
-          <p class="lock-meta">The clicker. Never leaves the draft tab.</p>
+          <h3>Katie — Yahoo operator</h3>
+          <p class="lock-meta">You own the click. Do not leave the Yahoo draft tab.</p>
           <ul>
-            <li>Owns search + queue. Always 8–12 names.</li>
+            <li>Owns search + queue. Keep 8–12 names loaded.</li>
             <li>Pre-load Gibbs, Chase, Bijan before 8:30.</li>
-            <li>At 15 seconds, click queue #1. No meeting.</li>
-            <li>After our pick, re-queue immediately.</li>
+            <li>At 15 seconds left, click queue #1. No debate.</li>
+            <li>After our pick, re-queue the next targets immediately.</li>
           </ul>
         </article>
         <article class="card navy">
-          <h3>War room</h3>
-          <p class="lock-meta">This site + Meet audio.</p>
+          <h3>Nikhil — war room</h3>
+          <p class="lock-meta">This site + Meet audio + the lock call.</p>
           <ul>
             <li>Watches the pick stream and bye weeks.</li>
-            <li>Calls the 3-name lock list before we are on the clock.</li>
-            <li>Tracks QB / RB / WR / IDP counts so we do not leave round 7 empty.</li>
-            <li>If silent at 15 seconds, operator clicks.</li>
+            <li>Calls a 3-name lock list before we are on the clock.</li>
+            <li>Tracks QB / RB / WR / IDP so we do not leave round 7 empty.</li>
+            <li>If silent at 15 seconds, Katie clicks queue #1.</li>
           </ul>
         </article>
       </div>
-      <div class="callout" style="margin-top:16px">Conflict protocol: one name, ten seconds, then click. The marriage survives. The pick does not get tabled.</div>
+      <div class="callout" style="margin-top:16px"><strong>Conflict protocol:</strong> one name, ten seconds, then click. Marriage first. The pick does not get tabled.</div>
+      <p class="lock-meta" style="margin-top:14px">Roles can swap if you prefer — just agree who clicks Yahoo and who watches this page.</p>
+    `;
+  },
+
+  faq() {
+    $("faqRoot").innerHTML = `
+      <div class="callout">New here? Start with <strong>Tonight</strong>, then open <strong>Board</strong> when you are drafting. Everything else is optional depth.</div>
+      <div class="faq-list">
+        <article class="faq-item">
+          <h3>What is this site?</h3>
+          <p>A private draft war room for <strong>Nikhil and Katie</strong> in Domination League (Yahoo #30476). It has the pick-2 plan, a searchable player board with Yahoo-ready names, a roster tracker, scoring rules, and live NFL form. Anyone with the link can use it — it is designed so Katie (or a friend) can open it and know what to do in under a minute.</p>
+        </article>
+        <article class="faq-item">
+          <h3>How do we use it on draft night?</h3>
+          <ol>
+            <li>Open this page on one laptop (or phone).</li>
+            <li>Open Yahoo Fantasy on the other device — same shared account.</li>
+            <li>Join Google Meet so you can talk over the 45-second clock.</li>
+            <li>Read <strong>Tonight</strong> once before 8:30 so the lock list is in both heads.</li>
+            <li>When drafting, use <strong>Board</strong>: tap a player to copy the exact Yahoo search name, paste into Yahoo, and queue them.</li>
+            <li>Tap players onto <strong>Roster</strong> as you pick them so you can see empty slots at a glance.</li>
+          </ol>
+        </article>
+        <article class="faq-item">
+          <h3>What should Katie do?</h3>
+          <p>Katie is set up as the <strong>Yahoo operator</strong> (see Duties): she stays on the draft screen, keeps the queue full, and clicks the pick. She can also keep this FAQ or Board open on a second screen if she wants. If she prefers the war-room role instead, swap with Nikhil — just make sure one person clicks Yahoo and one person watches the board.</p>
+        </article>
+        <article class="faq-item">
+          <h3>What should Nikhil do?</h3>
+          <p>Nikhil runs the war room: watches who got drafted, calls the next 1–2–3 lock names, watches bye weeks and position holes, and keeps Meet clear so Katie is not talking over the clock.</p>
+        </article>
+        <article class="faq-item">
+          <h3>What does each tab mean?</h3>
+          <ul>
+            <li><strong>Tonight</strong> — pick-2 decision tree, rounds 2–3 plan, snake pick numbers, hard rules.</li>
+            <li><strong>Board</strong> — ranked players. Filter by position. Search. Tap to copy the Yahoo name and add to Roster.</li>
+            <li><strong>Roster</strong> — your starter slots on this device (saved in the browser). Tap × to remove.</li>
+            <li><strong>Form</strong> — NFL games and player production scored with <em>our</em> league settings (not Yahoo login).</li>
+            <li><strong>League</strong> — the weird scoring that makes QBs and IDP linebackers so valuable here.</li>
+            <li><strong>Duties</strong> — who does what between Katie and Nikhil.</li>
+            <li><strong>FAQ</strong> — this page.</li>
+          </ul>
+        </article>
+        <article class="faq-item">
+          <h3>Why can’t I see our Yahoo points here?</h3>
+          <p>Yahoo Fantasy needs a login (OAuth) and a small server. This site is free static hosting on GitHub Pages, so it cannot read your private league matchup. Form uses public NFL box scores and applies Domination League scoring so you can still compare players. For the official weekly score, open Yahoo.</p>
+        </article>
+        <article class="faq-item">
+          <h3>Does my roster sync between Katie’s phone and Nikhil’s?</h3>
+          <p>No. Roster is saved in each browser’s local storage. Both of you should tap the same names after each pick (or one person owns Roster). The Board and Tonight tabs are the same for everyone — those do not need syncing.</p>
+        </article>
+        <article class="faq-item">
+          <h3>What if we disagree on a pick?</h3>
+          <p>Say one name. Ten seconds. Click. Do not burn the 45-second clock on a debate. Revisit strategy between picks.</p>
+        </article>
+        <article class="faq-item">
+          <h3>Can we use this after the draft?</h3>
+          <p>Yes. Through the season, use <strong>Form</strong> for weekly NFL context and <strong>League</strong> as a reminder of why your roster was built the way it was. Yahoo remains the source of truth for standings and lineup locks.</p>
+        </article>
+        <article class="faq-item">
+          <h3>Who built this?</h3>
+          <p>Nikhil built it for Domination League draft night with Katie as co-GM — same style as his other GitHub Pages projects. Portfolio: <a href="https://nikhilbastikar.dev" target="_blank" rel="noopener" style="color:#C0C4C8">nikhilbastikar.dev</a>.</p>
+        </article>
+      </div>
     `;
   },
 };
@@ -369,7 +434,7 @@ function renderRoster() {
   const extras = list.filter((p) => !used.has(p.search));
 
   $("rosterRoot").innerHTML = `
-    <div class="callout navy">Tap anyone on the Board tab to copy their Yahoo name <em>and</em> add them here. Each phone stores its own roster (localStorage) — both of you can track the same draft if you tap the same names.</div>
+    <div class="callout navy">Tap anyone on the Board tab to copy their Yahoo name <em>and</em> add them here. Katie and Nikhil each keep a list on their own phone — tap the same names after every pick so both screens stay in sync.</div>
     <div class="slot-grid">
       ${rows.map(({ slot, p }) => p ? `
         <div class="slot filled">

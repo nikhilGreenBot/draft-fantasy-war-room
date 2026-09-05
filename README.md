@@ -1,25 +1,24 @@
-# 🏈 Domination League — 2026 War Room
+# 🏈 Domination League — Nikhil & Katie's War Room
 
-Live draft board and season tracker for a 12-team Yahoo fantasy football league (pick 2, 45-second clock, custom scoring).
+Live draft board and season tracker for a 12-team Yahoo fantasy football league (pick 2, 45-second clock, custom scoring). Built for co-GMs **Nikhil and Katie**.
 
 **[Open the app](https://nikhilgreenbot.github.io/draft-fantasy-war-room/)**
 
-Built the same way as [PL Predictions Pro](https://nikhilgreenbot.github.io/premierLeague-Predictions-pro-by-Parth/) — vanilla HTML/CSS/JS on GitHub Pages. No build step.
+Same stack as [PL Predictions Pro](https://nikhilgreenbot.github.io/premierLeague-Predictions-pro-by-Parth/) — vanilla HTML/CSS/JS on GitHub Pages.
 
 ---
 
 ## What it is
 
-A Bills-colored war room for **DOmination Leauge** (Yahoo #30476):
-
 - **Tonight** — pick-2 lock list, 23/26 package, snake picks, hard rules
-- **Board** — searchable queue names; tap to copy the Yahoo search string and add to roster
-- **Roster** — starter slots saved on the phone (localStorage)
-- **Form** — ESPN scoreboard + Sleeper box scores, **rescored with this league's settings**
+- **Board** — searchable queue names; tap to copy Yahoo search string
+- **Roster** — starter slots saved on the device
+- **Form** — ESPN + Sleeper, rescored with this league's settings
 - **League** — 7-pt passing TDs, first downs, juiced IDP
-- **Duties** — co-GM split for draft night
+- **Duties** — Katie on Yahoo, Nikhil on war room (or swap)
+- **FAQ** — how anyone can use the page on draft night
 
-2025 custom PPG is baked in so the board works even if APIs hiccup on draft night.
+Fonts: **Outfit** (headings) + **Source Sans 3** (body) for readability on phones.
 
 ---
 

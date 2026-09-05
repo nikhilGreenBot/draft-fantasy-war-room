@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-  <title>Domination League — 2026 War Room</title>
-  <meta name="description" content="Live draft war room and season tracker for a 12-team Yahoo fantasy football league. Pick 2. Custom scoring. Built by Nikhil Bastikar."/>
+  <title>Domination League — Nikhil &amp; Katie's War Room</title>
+  <meta name="description" content="Nikhil and Katie's live draft war room for Domination League — 12-team Yahoo fantasy football. Pick 2. Custom scoring. FAQ included."/>
   <meta name="theme-color" content="#00338D"/>
   <link rel="canonical" href="https://nikhilgreenbot.github.io/draft-fantasy-war-room/"/>
-  <meta property="og:title" content="Domination League — 2026 War Room"/>
-  <meta property="og:description" content="12-team Yahoo draft board, custom scoring, and live NFL form. Pick 2. 45-second clock."/>
+  <meta property="og:title" content="Domination League — Nikhil & Katie's War Room"/>
+  <meta property="og:description" content="Co-GM draft board for Katie and Nikhil. Pick 2, custom scoring, and a how-to FAQ."/>
   <meta property="og:type" content="website"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -26,12 +26,12 @@
           <circle cx="46" cy="24" r="2.2" fill="#0A1A3A"/>
         </svg>
         <div class="header-titles">
-          <span class="header-name">DOMINATION LEAGUE</span>
-          <span class="header-credit">War Room · Nikhil + Co-GM</span>
+          <span class="header-name">Domination League</span>
+          <span class="header-credit">Nikhil &amp; Katie · Co-GMs</span>
         </div>
       </div>
       <div class="header-season">
-        <span class="header-season-num">PICK 2</span>
+        <span class="header-season-num">Pick 2</span>
         <span class="header-clock" id="draftClock">12-team · 45s</span>
       </div>
     </div>
@@ -43,6 +43,7 @@
         <button class="nav-tab" data-tab="form"><span class="nl">Form</span></button>
         <button class="nav-tab" data-tab="league"><span class="nl">League</span></button>
         <button class="nav-tab" data-tab="duties"><span class="nl">Duties</span></button>
+        <button class="nav-tab" data-tab="faq"><span class="nl">FAQ</span></button>
         <div class="nav-indicator" id="navIndicator"></div>
       </div>
     </nav>
@@ -60,7 +61,7 @@
     <section class="section" id="s-board">
       <div class="section-header">
         <h2 class="section-title">The Board</h2>
-        <span class="section-sub">Tap a name to copy the Yahoo search string</span>
+        <span class="section-sub">Tap a name to copy the Yahoo search string · Katie &amp; Nikhil</span>
       </div>
       <div class="board-tools">
         <input id="boardSearch" class="search" type="search" placeholder="Search player, team, Yahoo name…" autocomplete="off"/>
@@ -95,17 +96,25 @@
 
     <section class="section" id="s-duties">
       <div class="section-header">
-        <h2 class="section-title">Co-GM Split</h2>
-        <span class="section-sub">Two laptops · one account · 45 seconds</span>
+        <h2 class="section-title">Nikhil &amp; Katie</h2>
+        <span class="section-sub">Two laptops · one Yahoo account · 45 seconds</span>
       </div>
       <div id="dutiesRoot"></div>
+    </section>
+
+    <section class="section" id="s-faq">
+      <div class="section-header">
+        <h2 class="section-title">How to use this page</h2>
+        <span class="section-sub">For Katie, Nikhil, or anyone joining the war room</span>
+      </div>
+      <div id="faqRoot"></div>
     </section>
   </main>
 
   <footer class="footer">
-    <span class="footer-logo">DOMINATION LEAGUE</span>
+    <span class="footer-logo">Domination League</span>
     <span class="footer-sep">·</span>
-    <span class="footer-sub">2026 · Yahoo #30476</span>
+    <span class="footer-sub">Nikhil &amp; Katie · Yahoo #30476</span>
     <a class="footer-gh" href="https://nikhilbastikar.dev" target="_blank" rel="noopener">nikhilbastikar.dev</a>
   </footer>
 </div>
