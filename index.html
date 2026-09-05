@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="style.css?v=3"/>
+  <link rel="stylesheet" href="style.css?v=4"/>
 </head>
 <body>
 <div class="app">
@@ -37,7 +37,7 @@
     </div>
     <nav class="nav">
       <div class="nav-inner">
-        <button class="nav-tab active" data-tab="tonight"><span class="nl">Tonight</span></button>
+        <button class="nav-tab active" data-tab="tonight"><span class="nl">Plan</span></button>
         <button class="nav-tab" data-tab="board"><span class="nl">Board</span></button>
         <button class="nav-tab" data-tab="roster"><span class="nl">Roster</span></button>
         <button class="nav-tab" data-tab="form"><span class="nl">Form</span></button>
@@ -52,8 +52,8 @@
   <main class="main">
     <section class="section active" id="s-tonight">
       <div class="section-header">
-        <h2 class="section-title">Draft Night</h2>
-        <span class="section-sub" id="tonightSub">Sat 8:30 PM · 45s clock</span>
+        <h2 class="section-title">Draft plan</h2>
+        <span class="section-sub" id="tonightSub">Who to take · backups if gone</span>
       </div>
       <div id="tonightRoot"></div>
     </section>
@@ -121,8 +121,8 @@
 
 <div class="toast" id="toast" hidden></div>
 
-<script src="data.js?v=3"></script>
-<script src="api.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="data.js?v=4"></script>
+<script src="api.js?v=4"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>

@@ -275,7 +275,61 @@ body::before {
   letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim);
 }
 
-.faq-list { display: grid; gap: 10px; }
+.finish-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+}
+.finish-item {
+  background: var(--glass); border: 1px solid var(--line); border-radius: 12px;
+  padding: 12px;
+}
+.finish-item b { display: block; font-family: var(--fd); font-size: 0.95rem; margin-bottom: 2px; }
+.finish-item span { font-size: 0.8rem; color: var(--dim); }
+
+.plan-list { display: grid; gap: 12px; }
+.plan-card {
+  background: var(--glass); border: 1px solid var(--line); border-radius: 16px;
+  padding: 14px 14px 10px; overflow: hidden;
+}
+.plan-head {
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  margin-bottom: 6px;
+}
+.plan-round { font-family: var(--fd); font-size: 1.15rem; font-weight: 700; }
+.plan-pick { font-size: 0.8rem; color: var(--dim); margin-top: 2px; }
+.plan-need {
+  flex: none; padding: 6px 10px; border-radius: 999px;
+  background: rgba(198,12,48,.15); border: 1px solid rgba(198,12,48,.35);
+  font-size: 0.75rem; font-weight: 700; color: #ffc9d0; white-space: nowrap;
+}
+.plan-tip {
+  font-size: 0.9rem; color: #c8d4ea; margin: 0 0 10px; line-height: 1.4;
+}
+.plan-order { display: grid; gap: 5px; }
+.plan-player {
+  display: grid; grid-template-columns: 88px 28px 1fr auto; gap: 8px; align-items: center;
+  width: 100%; padding: 7px 8px; border-radius: 10px;
+  border: 1px solid transparent; background: rgba(255,255,255,.03);
+  color: inherit; cursor: pointer; text-align: left;
+}
+.plan-player:hover { border-color: var(--line); background: rgba(255,255,255,.06); }
+.plan-player:first-child {
+  background: rgba(198,12,48,.12); border-color: rgba(198,12,48,.28);
+}
+.plan-rank {
+  font-size: 0.72rem; font-weight: 700; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 0.02em;
+}
+.plan-player:first-child .plan-rank { color: #ff8a9a; }
+.plan-name { font-family: var(--fd); font-size: 0.95rem; font-weight: 600; }
+.plan-pos {
+  font-size: 0.7rem; font-weight: 700; color: var(--dim);
+  padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.06);
+}
+
+@media (max-width: 760px) {
+  .finish-grid { grid-template-columns: repeat(2, 1fr); }
+  .plan-player { grid-template-columns: 72px 26px 1fr auto; }
+}
 .faq-item {
   background: var(--glass); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px;
 }

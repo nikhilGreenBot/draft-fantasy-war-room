@@ -180,67 +180,131 @@ function bindRows(root, { copy = true, roster = false } = {}) {
 
 const RENDER = {
   tonight() {
-    const locks = PLAYERS.filter((p) => p.tier === "lock").sort(byRank);
-    const qbs = PLAYERS.filter((p) => p.tier === "qb1").sort(byRank);
-    const targets = PLAYERS.filter((p) =>
-      ["Justin Jefferson", "A.J. Brown", "Drake London", "Nico Collins", "George Pickens",
-        "De'Von Achane", "Derrick Henry", "Omarion Hampton", "Chase Brown", "Jonathan Taylor",
-        "James Cook", "Saquon Barkley", "Brock Bowers", "Trey McBride", "Josh Allen", "Lamar Jackson"]
-        .includes(p.name) || p.search === "James Cook III"
-    ).sort(byRank);
+    const find = (...names) => names.map((n) =>
+      PLAYERS.find((p) => p.name === n || p.search === n)
+    ).filter(Boolean);
+
+    const plan = [
+      {
+        round: 1,
+        pick: 2,
+        need: "Best player",
+        tip: "Whoever 1.01 leaves. Prefer Gibbs, else Chase, else Bijan.",
+        order: find("Jahmyr Gibbs", "Ja'Marr Chase", "Bijan Robinson"),
+      },
+      {
+        round: 2,
+        pick: 23,
+        need: "Elite QB",
+        tip: "Take the best QB still up. Do not wait.",
+        order: find("Josh Allen", "Lamar Jackson", "Drake Maye", "Joe Burrow", "Jayden Daniels", "Jalen Hurts"),
+      },
+      {
+        round: 3,
+        pick: 26,
+        need: "RB or WR",
+        tip: "If you took Chase at #2 → take an RB. If you took Gibbs/Bijan → take a WR.",
+        order: find(
+          "Jonathan Taylor", "De'Von Achane", "Derrick Henry", "Omarion Hampton", "Chase Brown",
+          "Justin Jefferson", "A.J. Brown", "Drake London", "Nico Collins", "George Pickens",
+          "James Cook III", "Saquon Barkley"
+        ),
+      },
+      {
+        round: "4–5",
+        pick: "47 · 50",
+        need: "WR + RB depth",
+        tip: "Fill FLEX. Grab Bowers or McBride only if they fell this far.",
+        order: find(
+          "Zay Flowers", "Ladd McConkey", "Tee Higgins", "Chris Olave", "Rashee Rice",
+          "Kyren Williams", "Javonte Williams", "Breece Hall", "Brock Bowers", "Trey McBride",
+          "Colston Loveland", "Tyler Warren"
+        ),
+      },
+      {
+        round: "6–7",
+        pick: "71 · 74",
+        need: "IDP #1 + skill",
+        tip: "First green-dot linebacker. Then another WR/RB/TE.",
+        order: find(
+          "Jordyn Brooks", "Jack Campbell", "Carson Schwesinger", "Roquan Smith",
+          "Blake Cashman", "Foyesade Oluokun", "Fred Warner", "Ernest Jones"
+        ),
+      },
+      {
+        round: "8–9",
+        pick: "95 · 98",
+        need: "IDP #2 + TE",
+        tip: "Second LB. If you still have no TE, take one here.",
+        order: find(
+          "Nick Bolton", "Jamien Sherwood", "Cedric Gray", "Zack Baun", "Quay Walker",
+          "Tucker Kraft", "Sam LaPorta", "George Kittle", "Dalton Kincaid"
+        ),
+      },
+      {
+        round: "10–13",
+        pick: "119–146",
+        need: "Bench + QB2",
+        tip: "Backup QB, handcuff, upside WR. Aubrey only if skill board is dead.",
+        order: find(
+          "Bo Nix", "Jared Goff", "Brock Purdy", "Dak Prescott",
+          "Alec Pierce", "Jameson Williams", "Rome Odunze", "Isiah Pacheco",
+          "Blake Corum", "Brandon Aubrey"
+        ),
+      },
+      {
+        round: "14–17",
+        pick: "167–194",
+        need: "DEF then K",
+        tip: "Defense first, then kicker. Last picks = extra IDP or lottery WR.",
+        order: find(
+          "Los Angeles Rams", "Houston Texans", "Seattle Seahawks", "Denver Broncos", "Philadelphia Eagles",
+          "Cameron Dicker", "Ka'imi Fairbairn", "Jason Myers", "Cam Little"
+        ),
+      },
+    ];
+
+    function planRow(p, i) {
+      return `<button class="plan-player" data-search="${p.search.replace(/"/g, "&quot;")}">
+        <span class="plan-rank">${i === 0 ? "Take" : `If gone → ${i + 1}`}</span>
+        ${logoImg(p.team, "tlogo sm")}
+        <span class="plan-name">${p.name}</span>
+        <span class="plan-pos">${p.pos}</span>
+      </button>`;
+    }
 
     $("tonightRoot").innerHTML = `
       <div class="hero-bar">
-        <div class="hero-chip"><strong>Katie &amp; Nikhil</strong> · Domination League</div>
-        <div class="stat-row tight">
-          <div class="stat"><b>1.02</b><span>Slot</span></div>
-          <div class="stat"><b>45s</b><span>Clock</span></div>
-          <div class="stat"><b>12</b><span>Teams</span></div>
-        </div>
+        <div class="hero-chip"><strong>Katie &amp; Nikhil</strong> · pick 2 · 45s clock</div>
+        <p class="one-liner">Read top to bottom. For each pick: take #1 if available, else #2, else #3…</p>
       </div>
 
-      <div class="block-label">Pick 2 — take in this order</div>
-      <div class="lock-grid">
-        ${locks.map((p, i) => `
-          <button class="lock-card ${i === 0 ? "accent" : ""}" data-search="${p.search.replace(/"/g, "&quot;")}">
-            <div class="lock-top">
-              ${logoImg(p.team, "tlogo")}
-              <span class="lock-num">#${i + 1}</span>
+      <div class="plan-list">
+        ${plan.map((step) => `
+          <article class="plan-card">
+            <header class="plan-head">
+              <div>
+                <div class="plan-round">Round ${step.round}</div>
+                <div class="plan-pick">Overall pick ${step.pick}</div>
+              </div>
+              <div class="plan-need">${step.need}</div>
+            </header>
+            <p class="plan-tip">${step.tip}</p>
+            <div class="plan-order">
+              ${step.order.map((p, i) => planRow(p, i)).join("")}
             </div>
-            <div class="lock-name">${p.name}</div>
-            <div class="lock-meta">${p.pos} · ${p.team} · Bye ${p.bye}</div>
-            <div class="lock-ppg">${p.custom?.ppg?.toFixed(1) ?? "—"} <span>PPG</span></div>
-          </button>`).join("")}
+          </article>
+        `).join("")}
       </div>
 
-      <div class="ifthen">
-        <div class="ifthen-row"><span class="tag">If</span> 1.01 takes Gibbs <span class="arrow">→</span> <strong>Chase</strong></div>
-        <div class="ifthen-row"><span class="tag">If</span> 1.01 takes Chase <span class="arrow">→</span> <strong>Gibbs</strong></div>
-        <div class="ifthen-row mute">Skip at #2: CMC · Cook · Allen</div>
-      </div>
-
-      <div class="block-label">Picks 23 + 26</div>
-      <div class="grid-2">
-        <article class="card navy">
-          <div class="lock-num">1. Elite QB</div>
-          <div class="mini-list">${qbs.slice(0, 6).map(miniPlayer).join("")}</div>
-        </article>
-        <article class="card">
-          <div class="lock-num">2. Then RB or WR</div>
-          <p class="one-liner">Chase at 2 → need an RB here. Gibbs/Bijan at 2 → QB + WR is fine.</p>
-          <div class="mini-list">${targets.filter((p) => p.pos !== "QB").slice(0, 8).map(miniPlayer).join("")}</div>
-        </article>
-      </div>
-
-      <div class="block-label">Our picks</div>
-      <div class="picks">${PICKS.map((n, i) => `<span class="pick-pill ours">R${i + 1} · ${n}</span>`).join("")}</div>
-
-      <div class="block-label">Rules</div>
-      <div class="rules compact">
-        <div class="rule"><i>1</i> No K / DEF before round 14</div>
-        <div class="rule"><i>2</i> Elite QB by pick 26</div>
-        <div class="rule"><i>3</i> Two tackle LBs for IDP (rounds 6–11)</div>
-        <div class="rule"><i>4</i> At 15s left → click queue #1</div>
+      <div class="block-label">Finished roster should look like</div>
+      <div class="finish-grid">
+        <div class="finish-item"><b>QB</b><span>1 elite + 1 backup</span></div>
+        <div class="finish-item"><b>RB</b><span>1 starter + 1–2 depth</span></div>
+        <div class="finish-item"><b>WR</b><span>3–4 (FLEX loves WRs)</span></div>
+        <div class="finish-item"><b>TE</b><span>1 (Bowers/McBride or mid)</span></div>
+        <div class="finish-item"><b>IDP</b><span>2 tackle LBs</span></div>
+        <div class="finish-item"><b>K / DEF</b><span>Last 2–4 rounds only</span></div>
       </div>
     `;
     bindRows($("tonightRoot"), { copy: true, roster: true });
