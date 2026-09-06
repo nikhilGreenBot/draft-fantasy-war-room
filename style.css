@@ -236,7 +236,21 @@ body::after {
 }
 .badge.lock { background: var(--red); }
 .badge.fade { background: rgba(198,12,48,.2); color: #ff8a9a; }
+.badge.avoid { background: #8B0000; color: #fff; }
+.badge.monitor { background: #8a6d1d; color: #ffe7a0; }
 .badge.qb1, .badge.idp1, .badge.te1 { background: var(--navy); }
+
+.injury-alert {
+  margin-bottom: 16px; padding: 12px 14px; border-radius: 14px;
+  background: rgba(139,0,0,.22); border: 1px solid rgba(255,120,120,.35);
+}
+.injury-head {
+  font-family: var(--fd); font-weight: 700; font-size: 0.95rem; margin-bottom: 6px; color: #ffc9d0;
+}
+.injury-avoid, .injury-watch {
+  font-size: 0.85rem; color: #e8d0d4; margin: 0 0 4px; line-height: 1.4;
+}
+.injury-watch { color: #e8dfc0; margin-bottom: 0; }
 
 .slot-grid { display: grid; gap: 7px; }
 .slot {

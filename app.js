@@ -74,7 +74,10 @@ function shortNote(p) {
   return s.length > 72 ? s.slice(0, 69) + "…" : s;
 }
 
-function tierLabel(t) {
+function tierLabel(p) {
+  if (p.status === "avoid") return "AVOID";
+  if (p.status === "monitor") return "WATCH";
+  const t = p.tier;
   if (t === "lock") return "LOCK";
   if (t === "fade") return "FADE";
   if (t === "qb1") return "QB";
@@ -138,7 +141,8 @@ function playerCard(p, extra = "") {
     ? `<img class="head" src="${headshot(p)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'head'}))"/>`
     : `<div class="head"></div>`;
   const ppg = p.custom && p.custom.ppg != null ? p.custom.ppg.toFixed(1) : "—";
-  const badge = tierLabel(p.tier);
+  const badge = tierLabel(p);
+  const badgeClass = p.status === "avoid" ? "avoid" : p.status === "monitor" ? "monitor" : (p.tier || "");
   const note = shortNote(p);
   return `<button class="prow" data-search="${p.search.replace(/"/g, "&quot;")}">
     <div class="rk">${p.rank < 200 ? p.rank : "—"}</div>
@@ -147,7 +151,7 @@ function playerCard(p, extra = "") {
       ${logoImg(p.team, "tlogo sm")}
     </div>
     <div class="p-main">
-      <div class="p-name">${p.name}${badge ? `<span class="badge ${p.tier}">${badge}</span>` : ""}</div>
+      <div class="p-name">${p.name}${badge ? `<span class="badge ${badgeClass}">${badge}</span>` : ""}</div>
       <div class="p-sub"><span class="pos-pill">${p.pos}</span> ${p.team || ""} · Bye ${p.bye || "—"}</div>
       ${note ? `<div class="p-note">${note}</div>` : ""}
     </div>
@@ -214,18 +218,18 @@ const RENDER = {
         round: "4–5",
         pick: "47 · 50",
         need: "WR + RB depth",
-        tip: "Fill FLEX. Grab Bowers or McBride only if they fell this far.",
+        tip: "Healthy FLEX only. Skip Olave / Breece. Bowers or McBride only if they fell.",
         order: find(
-          "Zay Flowers", "Ladd McConkey", "Tee Higgins", "Chris Olave", "Rashee Rice",
-          "Kyren Williams", "Javonte Williams", "Breece Hall", "Brock Bowers", "Trey McBride",
-          "Colston Loveland", "Tyler Warren"
+          "Zay Flowers", "Ladd McConkey", "Tee Higgins", "DeVonta Smith", "Rashee Rice",
+          "Kyren Williams", "Javonte Williams", "Travis Etienne", "Bucky Irving",
+          "Brock Bowers", "Trey McBride", "Colston Loveland", "Tyler Warren", "Garrett Wilson"
         ),
       },
       {
         round: "6–7",
         pick: "71 · 74",
         need: "IDP #1 + skill",
-        tip: "First green-dot linebacker. Then another WR/RB/TE.",
+        tip: "First green-dot linebacker. Then another healthy WR/RB/TE.",
         order: find(
           "Jordyn Brooks", "Jack Campbell", "Carson Schwesinger", "Roquan Smith",
           "Blake Cashman", "Foyesade Oluokun", "Fred Warner", "Ernest Jones"
@@ -235,21 +239,21 @@ const RENDER = {
         round: "8–9",
         pick: "95 · 98",
         need: "IDP #2 + TE",
-        tip: "Second LB. If you still have no TE, take one here.",
+        tip: "Second LB. Need TE → Kraft / LaPorta / Kincaid (skip Kittle tonight).",
         order: find(
           "Nick Bolton", "Jamien Sherwood", "Cedric Gray", "Zack Baun", "Quay Walker",
-          "Tucker Kraft", "Sam LaPorta", "George Kittle", "Dalton Kincaid"
+          "Tucker Kraft", "Sam LaPorta", "Dalton Kincaid", "Kyle Pitts"
         ),
       },
       {
         round: "10–13",
         pick: "119–146",
         need: "Bench + QB2",
-        tip: "Backup QB, handcuff, upside WR. Aubrey only if skill board is dead.",
+        tip: "Healthy bench only. Skip Henderson / Love / Egbuka. Aubrey only if skill board is dead.",
         order: find(
           "Bo Nix", "Jared Goff", "Brock Purdy", "Dak Prescott",
-          "Alec Pierce", "Jameson Williams", "Rome Odunze", "Isiah Pacheco",
-          "Blake Corum", "Brandon Aubrey"
+          "Alec Pierce", "Jameson Williams", "Rome Odunze", "Luther Burden",
+          "Isiah Pacheco", "Blake Corum", "Jayden Reed", "Brandon Aubrey"
         ),
       },
       {
@@ -273,6 +277,9 @@ const RENDER = {
       </button>`;
     }
 
+    const avoids = PLAYERS.filter((p) => p.status === "avoid").sort(byRank);
+    const monitors = PLAYERS.filter((p) => p.status === "monitor").sort(byRank);
+
     $("tonightRoot").innerHTML = `
       <div class="crew-banner-wrap">
         <img class="crew-banner" src="photos/group-banner.jpg" alt="Katie and Nikhil in costume" width="224" height="224" loading="eager"/>
@@ -283,8 +290,14 @@ const RENDER = {
         </div>
       </div>
 
+      <div class="injury-alert">
+        <div class="injury-head">Updated Sept 5 · do not queue injured</div>
+        <p class="injury-avoid"><strong>Hard avoid:</strong> ${avoids.map((p) => p.name).join(" · ") || "none"}</p>
+        <p class="injury-watch"><strong>Watch / risky:</strong> ${monitors.map((p) => p.name).join(" · ") || "none"}</p>
+      </div>
+
       <div class="hero-bar">
-        <p class="one-liner">Read top to bottom. For each pick: take #1 if available, else #2, else #3…</p>
+        <p class="one-liner">Read top to bottom. For each pick: take #1 if available, else #2, else #3… Healthy names only below.</p>
       </div>
 
       <div class="plan-list">
